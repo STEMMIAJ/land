@@ -1,0 +1,1 @@
+[22-Aug-2025 15:05:24 UTC] PHP Warning:  chmod(): No such file or directory in /home/stemmiac/public_html/wp-admin/includes/class-wp-filesystem-direct.php on line 173

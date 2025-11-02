@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEMMIA - Como Utilizar os Prompts Médicos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        /* CSS específico para impressão/PDF */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            body {
+                background: var(--background) !important;
+            }
+            
+            .header {
+                page-break-inside: avoid;
+                margin-bottom: 2rem;
+            }
+            
+            .hotmart-section {
+                page-break-inside: avoid;
+                margin-bottom: 2rem;
+            }
+            
+            .feature-section {
+                page-break-inside: avoid;
+                margin-bottom: 2rem;
+            }
+            
+            .hotmart-step {
+                page-break-inside: avoid;
+                margin-bottom: 1rem;
+            }
+            
+            .hotmart-step img {
+                max-width: 100%;
+                height: auto;
+                page-break-inside: avoid;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #004499;
+            --secondary: #00d4ff;
+            --accent: #00ff88;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --background: #0a0e27;
+            --background-light: #1a1f3a;
+            --border: #334155;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --gradient-soft: linear-gradient(135deg, rgba(0, 102, 204, 0.1), rgba(0, 212, 255, 0.1));
+            --gradient-medium: linear-gradient(135deg, rgba(0, 102, 204, 0.2), rgba(0, 212, 255, 0.2));
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--background);
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 3rem 0 4rem 0;
+            background: var(--gradient);
+            border-radius: 25px;
+            color: white;
+            box-shadow: 0 20px 60px rgba(0, 102, 204, 0.4), 0 0 100px rgba(0, 212, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .logo {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 3rem auto;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 4px solid var(--secondary);
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.3), 0 0 40px rgba(0, 212, 255, 0.1);
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: white;
+            text-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+            letter-spacing: -0.02em;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            font-weight: 500;
+            opacity: 0.95;
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+        
+        .subtitle .highlight {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+        }
+        
+        .intro-box {
+            background: var(--gradient-soft);
+            padding: 3rem;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
+        }
+        
+        .intro-box h2 {
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 212, 255, 0.2);
+        }
+        
+        .intro-box h2 .system-name {
+            color: #ffffff;
+            font-weight: 800;
+            text-shadow: 0 0 25px rgba(0, 212, 255, 0.8);
+        }
+        
+        .intro-box p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .hotmart-section {
+            background: var(--gradient-soft);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.1);
+        }
+        
+        .hotmart-section h2 {
+            color: var(--secondary);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .hotmart-section h2::before {
+            content: "📥";
+            font-size: 1.5rem;
+        }
+        
+        .hotmart-section p {
+            color: var(--text-secondary);
+        }
+        
+        .hotmart-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .hotmart-step {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 102, 204, 0.3);
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hotmart-step h3 {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .hotmart-step p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .feature-section {
+            background: var(--gradient-soft);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        
+        .feature-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            color: white;
+            border-radius: 15px;
+            text-align: center;
+            line-height: 50px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.3);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .usage-box {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid var(--secondary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.1);
+        }
+        
+        .usage-box h4 {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .usage-box h4::before {
+            content: "👉";
+        }
+        
+        .example-box {
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+        
+        .delivers-box {
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.1);
+        }
+        
+        .delivers-box h4 {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .delivers-box h4::before {
+            content: "✅";
+        }
+        
+        .extras-box {
+            background: var(--gradient-soft);
+            border: 2px solid var(--secondary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.1);
+        }
+        
+        .extras-box h4 {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .extras-box h4::before {
+            content: "⚙️";
+        }
+        
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+        
+        li::before {
+            content: "•";
+            color: var(--secondary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .prontuario-box {
+            background: rgba(0, 102, 204, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .prontuario-box h4 {
+            color: var(--primary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .prontuario-box strong {
+            color: var(--text-primary);
+        }
+        
+        .sub-section {
+            margin: 2rem 0;
+            padding-left: 1rem;
+            border-left: 3px solid var(--secondary);
+        }
+        
+        .sub-section h4 {
+            color: var(--secondary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .sub-section p {
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .hotmart-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-section {
+                padding: 1.5rem;
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--gradient);
+            border-radius: 20px;
+            color: white;
+        }
+        
+        .footer p {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        /* Dark theme specific styles */
+        .hotmart-step div[style*="background: #f0f9ff"] {
+            background: rgba(0, 102, 204, 0.2) !important;
+        }
+        
+        .hotmart-step div[style*="background: #ffffff"] {
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .hotmart-step img {
+            border: 1px solid var(--border) !important;
+        }
+        
+        .hotmart-step p em {
+            color: var(--text-secondary);
+        }
+        
+        .success-box {
+            background: var(--gradient-soft);
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.1);
+        }
+        
+        .success-box h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        
+        .divider-box {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--gradient-medium);
+            border-radius: 15px;
+            border: 2px dashed var(--secondary);
+        }
+        
+        .divider-box p {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .tip-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 15px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .tip-box h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        
+        .tip-box p {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <img src="logo.png" alt="STEMMIA Logo">
+            </div>
+            <h1>Como Utilizar</h1>
+            <p class="subtitle">Guia completo para aproveitar ao máximo os <span class="highlight">Prompts Médicos STEMMIA</span></p>
+            
+            <div class="intro-box">
+                <h2>Os <span class="system-name">Prompts Médicos STEMMIA</span> já estão ativos em segundo plano.</h2>
+                <p>Você só precisa escrever sua dúvida ou caso clínico, que o sistema automaticamente aplicará a estrutura completa.</p>
+            </div>
+        </header>
+
+        <section class="hotmart-section">
+            <h2>Como baixar os arquivos na Hotmart após a compra</h2>
+            <p>Após finalizar sua compra, siga estes passos simples para acessar todos os materiais do STEMMIA:</p>
+            
+            <div class="hotmart-steps">
+                <div class="hotmart-step">
+                    <h3>1. Acesse seu email</h3>
+                    <p>Você receberá um email de confirmação da Hotmart com o assunto "Seu produto foi liberado" no email usado na compra.</p>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>2. Clique em "Acessar produto"</h3>
+                    <p>No email, clique no botão azul "Acessar produto" ou no link fornecido para ser direcionado à área de membros.</p>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>3. Faça login na Hotmart</h3>
+                    <p>Use o mesmo email da compra para fazer login. Se é seu primeiro acesso, você precisará criar uma senha.</p>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>4. Acesse "Meus produtos"</h3>
+                    <p>Na área do usuário da Hotmart, clique em "Meus produtos" para ver todos os produtos que você comprou.</p>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>5. Encontre o STEMMIA</h3>
+                    <p>Localize "STEMMIA - Prompts Médicos" na lista e clique em "Acessar" para entrar na área do produto.</p>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>6. Baixe os arquivos</h3>
+                    <p>Na área do produto, você encontrará todos os arquivos disponíveis para download, incluindo este guia e os prompts.</p>
+                </div>
+            </div>
+            
+            <div class="tip-box">
+                <h3>💡 Dica importante:</h3>
+                <p>Guarde bem o link de acesso aos seus produtos na Hotmart. Você pode acessar seus materiais a qualquer momento através da plataforma, mesmo após o download.</p>
+            </div>
+        </section>
+
+        <section class="hotmart-section" style="margin-top: 3rem;">
+            <h2>Como usar os Prompts STEMMIA no ChatGPT</h2>
+            <p>Depois de baixar os arquivos, siga este tutorial passo-a-passo para configurar os prompts no ChatGPT:</p>
+            
+            <div class="hotmart-steps">
+                <div class="hotmart-step">
+                    <h3>1. Acesse o ChatGPT</h3>
+                    <p>Vá para <strong>chat.openai.com</strong> e faça login na sua conta ChatGPT (necessário plano Plus ou superior).</p>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>2. Crie um novo projeto</h3>
+                    <p>Crie em "Novo Projeto" e renomeie como quiser, ou como "Prompts STEMMIA".</p>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>3. Clique em "Adicionar arquivos"</h3>
+                    <p>Você verá a opção "Adicionar arquivos" - clique nela para fazer upload dos prompts STEMMIA que você baixou.</p>
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--gradient-medium); border-radius: 15px; text-align: center; border: 1px solid rgba(0, 212, 255, 0.3);">
+                        <img src="chatgpt-interface.png" alt="Interface do ChatGPT" style="max-width: 100%; height: auto; border-radius: 12px; border: 2px solid var(--secondary); box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);">
+                        <p style="font-size: 1rem; color: var(--secondary); margin-top: 1rem; font-weight: 500;"><em>Interface do ChatGPT mostrando "Prompts STEMMIA" e opção "Adicionar arquivos"</em></p>
+                    </div>
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--gradient-medium); border-radius: 15px; text-align: center; border: 1px solid rgba(0, 212, 255, 0.3);">
+                        <img src="adicionar-arquivos.png" alt="Tela de adicionar arquivos" style="max-width: 100%; height: auto; border-radius: 12px; border: 2px solid var(--secondary); box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);">
+                        <p style="font-size: 1rem; color: var(--secondary); margin-top: 1rem; font-weight: 500;"><em>Tela que aparece ao clicar em "Adicionar arquivos"</em></p>
+                    </div>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>4. Faça upload do arquivo STEMMIA</h3>
+                    <p>Selecione o arquivo "STEMMIA Prompts.pdf" que você baixou. O ChatGPT irá processar e disponibilizar o conteúdo.</p>
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--gradient-medium); border-radius: 15px; text-align: center; border: 1px solid rgba(0, 212, 255, 0.3);">
+                        <img src="upload-arquivo.png" alt="Upload de arquivo" style="max-width: 100%; height: auto; border-radius: 12px; border: 2px solid var(--secondary); box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);">
+                        <p style="font-size: 1rem; color: var(--secondary); margin-top: 1rem; font-weight: 500;"><em>Tela de upload mostrando o arquivo STEMMIA sendo enviado</em></p>
+                    </div>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>5. Configure as instruções personalizadas</h3>
+                    <p>Clique em "Adicionar instruções" para personalizar como o ChatGPT deve responder usando os prompts médicos.</p>
+                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 102, 204, 0.2); border-radius: 10px;">
+                        <p><strong>Instruções sugeridas:</strong></p>
+                        <div style="margin-top: 1rem; padding: 1rem; background: var(--gradient-medium); border-radius: 15px; text-align: center; border: 1px solid rgba(0, 212, 255, 0.3);">
+                            <img src="instrucoes.png" alt="Instruções do ChatGPT" style="max-width: 100%; height: auto; border-radius: 12px; border: 2px solid var(--secondary); box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);">
+                            <p style="font-size: 1rem; color: var(--secondary); margin-top: 1rem; font-weight: 500;"><em>Exemplo das instruções personalizadas para o ChatGPT</em></p>
+                        </div>
+                        <ul style="text-align: left; margin-top: 1rem;">
+                            <li>Quando pedir MODO DIDÁTICO, crie versão expandida, resumo executivo ou formato de aula</li>
+                            <li>Quando pedir DIRETRIZES, compare protocolos nacionais e internacionais</li>
+                            <li>Se o usuário pedir CITAÇÕES, inclue capítulo, seção e página quando disponível</li>
+                            <li>Sempre adapte linguagem ao público: estudante (didática), residente (protocolos rápidos), médico (condutas práticas)</li>
+                            <li>Nunca invente informações. Seja claro, replicável e confiável</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="hotmart-step">
+                    <h3>6. Arquivo carregado com sucesso!</h3>
+                    <p>Agora o ChatGPT tem acesso a todos os prompts médicos STEMMIA e está pronto para usar.</p>
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--gradient-medium); border-radius: 15px; text-align: center; border: 1px solid rgba(0, 212, 255, 0.3);">
+                        <img src="arquivo-carregado.png" alt="Arquivo carregado" style="max-width: 100%; height: auto; border-radius: 12px; border: 2px solid var(--secondary); box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);">
+                        <p style="font-size: 1rem; color: var(--secondary); margin-top: 1rem; font-weight: 500;"><em>Confirmação de que o arquivo STEMMIA foi carregado com sucesso</em></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="success-box">
+                <h3 style="background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🎉 Pronto! Agora é só usar!</h3>
+                <p><strong style="color: var(--text-primary);">Resumo:</strong> Atue 100% em modo MATRIZ STEMMIA, aplicando fluxogramas, checklists, prontuário estruturado, condutas, linguagem adaptada, ensino e diretrizes oficiais.</p>
+                <p style="margin-top: 1rem; font-style: italic; color: var(--text-secondary);">Agora você pode fazer qualquer pergunta médica e o ChatGPT responderá usando toda a estrutura e conhecimento dos Prompts STEMMIA!</p>
+            </div>
+        </section>
+
+        <div class="divider-box">
+            <p>Abaixo estão as instruções detalhadas de cada funcionalidade (1 a 10):</p>
+        </div>
+
+        <section class="feature-section">
+            <div class="feature-number">1</div>
+            <h2>Fluxogramas de Investigação e Conduta</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: descreva o caso clínico ou peça um fluxograma específico.</h4>
+                <div class="example-box">
+                    Exemplo: "Paciente 35 anos, anemia microcítica, VCM 72. Como investigar?"
+                </div>
+            </div>
+            
+            <div class="delivers-box">
+                <h4>O sistema entrega:</h4>
+                <ul>
+                    <li>Um passo a passo sequencial com pontos de decisão</li>
+                    <li>Estrutura em formato visual (setas, ramificações) ou em tópicos lineares</li>
+                    <li>Integração de exames laboratoriais, de imagem e conduta prática em cada etapa</li>
+                    <li>Indicação de quando encaminhar para especialista</li>
+                </ul>
+            </div>
+            
+            <div class="extras-box">
+                <h4>Funcionalidades extras:</h4>
+                <ul>
+                    <li>Pode gerar fluxogramas de diagnóstico, de conduta terapêutica ou de acompanhamento</li>
+                    <li>O usuário pode pedir versão simplificada (resumida) ou detalhada (com explicações em cada etapa)</li>
+                    <li>Se solicitado, pode exportar em formato de diagrama visual para usar em aulas/slides</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-number">2</div>
+            <h2>Checklists Práticos</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: peça perguntas ou exames para determinada condição.</h4>
+                <div class="example-box">
+                    Exemplo: "Quais perguntas devo fazer na anamnese de asma?"
+                </div>
+            </div>
+            
+            <div class="delivers-box">
+                <h4>O sistema entrega:</h4>
+                <ul>
+                    <li>Listas de perguntas-chave para anamnese</li>
+                    <li>Exames obrigatórios e complementares</li>
+                    <li>Divisão por blocos (ex.: sintomas principais, fatores de risco, sinais de alarme)</li>
+                    <li>Indicação de quando cada item é essencial (urgência vs rotina)</li>
+                </ul>
+            </div>
+            
+            <div class="extras-box">
+                <h4>Funcionalidades extras:</h4>
+                <ul>
+                    <li>Pode gerar checklist de consulta, pronto para usar em atendimento</li>
+                    <li>Pode ser adaptado: versão completa (ex.: ambulatório de ensino) ou enxuta (consultório)</li>
+                    <li>Útil também como material didático ou para revisão pré-prova</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-number">3</div>
+            <h2>Diferenciais Diagnósticos</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: peça comparação entre diagnósticos semelhantes.</h4>
+                <div class="example-box">
+                    Exemplo: "Como diferenciar pneumonia viral de bacteriana?"
+                </div>
+            </div>
+            
+            <div class="delivers-box">
+                <h4>O sistema entrega:</h4>
+                <ul>
+                    <li>Tabelas comparativas com critérios clínicos, laboratoriais e de imagem</li>
+                    <li>Destaque dos pontos que mais ajudam na diferenciação prática</li>
+                    <li>Sinais de gravidade que exigem intervenção imediata</li>
+                </ul>
+            </div>
+            
+            <div class="extras-box">
+                <h4>Funcionalidades extras:</h4>
+                <ul>
+                    <li>Pode gerar listas curtas (para consulta rápida) ou quadros extensos (para ensino)</li>
+                    <li>Pode incluir raciocínio baseado em idade, comorbidades ou contexto epidemiológico</li>
+                    <li>Excelente recurso para residentes ou em provas práticas</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-number">4</div>
+            <h2>Condutas Terapêuticas</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: pergunte diretamente sobre tratamento.</h4>
+                <div class="example-box">
+                    Exemplo: "Qual a dose inicial de beclometasona para criança de 6 anos com asma?"
+                </div>
+            </div>
+            
+            <div class="delivers-box">
+                <h4>O sistema entrega:</h4>
+                <ul>
+                    <li>Doses mínimas e máximas, com faixa etária correspondente</li>
+                    <li>Ajustes em situações especiais (idoso, gestante, insuficiência renal/hepática)</li>
+                    <li>Alternativas terapêuticas de primeira e segunda linha</li>
+                    <li>Tempo de uso, necessidade de reavaliação e quando escalar a conduta</li>
+                    <li>Referências diretas em diretrizes nacionais/internacionais</li>
+                </ul>
+            </div>
+            
+            <div class="extras-box">
+                <h4>Funcionalidades extras:</h4>
+                <ul>
+                    <li>Pode gerar protocolos de pronto-atendimento, ambulatório ou longo prazo</li>
+                    <li>Permite comparação entre opções (ex.: budesonida x beclometasona x fluticasona)</li>
+                    <li>Pode gerar tabelas de equivalência de doses</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-number">5</div>
+            <h2>Resumo Executivo</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: peça versão rápida e objetiva da conduta ou investigação.</h4>
+                <div class="example-box">
+                    Exemplo: "Resuma conduta para crise de asma em criança em 5 tópicos."
+                </div>
+            </div>
+            
+            <div class="delivers-box">
+                <h4>O sistema entrega:</h4>
+                <ul>
+                    <li>Checklist rápido em 3–7 itens</li>
+                    <li>Priorização dos passos críticos (o que fazer primeiro)</li>
+                    <li>Versão pensada para consulta rápida no consultório ou pronto-socorro</li>
+                </ul>
+            </div>
+            
+            <div class="extras-box">
+                <h4>Funcionalidades extras:</h4>
+                <ul>
+                    <li>Pode exportar em formato de post-it digital ou lista de bolso</li>
+                    <li>Pode ser adaptado para ensino (resumo de guideline) ou atendimento (conduta imediata)</li>
+                    <li>Excelente para revisão antes de plantão ou prova prática</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-number">6</div>
+            <h2>Referências Oficiais</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: pergunte sempre pela fonte.</h4>
+                <div class="example-box">
+                    Exemplo: "Qual diretriz recomenda esse tratamento?"
+                </div>
+            </div>
+            
+            <div class="delivers-box">
+                <h4>O sistema entrega:</h4>
+                <ul>
+                    <li>Nome da diretriz, sociedade científica e ano (ex.: SBPT 2023, GINA 2024)</li>
+                    <li>Link ou referência bibliográfica real (quando disponível)</li>
+                    <li>Sugestão de comparação entre protocolos (Brasil vs EUA vs Europa)</li>
+                </ul>
+            </div>
+            
+            <div class="extras-box">
+                <h4>Funcionalidades extras:</h4>
+                <ul>
+                    <li>Pode diferenciar quando a conduta está em consenso internacional ou quando há diferenças</li>
+                    <li>O usuário pode pedir versão detalhada (com referência completa) ou rápida (só sigla + ano)</li>
+                    <li>Garante que nunca haja "referência inventada"</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-number">7</div>
+            <h2>Adaptação ao Perfil</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: informe seu perfil antes da pergunta.</h4>
+                <div class="example-box">
+                    Exemplos:<br>
+                    • "Sou estudante de medicina, explique de forma didática."<br>
+                    • "Sou residente, quero foco em protocolos."<br>
+                    • "Sou médico em consultório, quero conduta objetiva."
+                </div>
+            </div>
+            
+            <div class="delivers-box">
+                <h4>O sistema adapta a resposta:</h4>
+                <ul>
+                    <li>Para estudante → linguagem simples, exemplos, esquemas visuais</li>
+                    <li>Para residente → protocolos, condutas rápidas, foco em exames</li>
+                    <li>Para médico atuante → objetividade, fluxogramas práticos, impacto imediato</li>
+                </ul>
+            </div>
+            
+            <div class="extras-box">
+                <h4>Funcionalidades extras:</h4>
+                <ul>
+                    <li>Pode ajustar a profundidade da resposta (resumida, intermediária, detalhada)</li>
+                    <li>Pode gerar exemplos práticos (casos simulados)</li>
+                    <li>Evita perda de tempo com explicações fora do perfil do usuário</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-number">8</div>
+            <h2>Prontuário Estruturado Inteligente</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: Digite partes da consulta clínica (por exemplo, apenas a queixa principal ou a história da doença atual).</h4>
+                
+                <div class="example-box" style="margin-bottom: 1rem;">
+                    Usuário digita:<br>
+                    "Paciente com dor abdominal há 2 dias, náuseas e febre de 38ºC."
+                </div>
+                
+                <div class="prontuario-box">
+                    <h4>📋 PRONTUÁRIO ESTRUTURADO</h4>
+                    <strong>Queixa Principal (QP):</strong> Dor abdominal há 2 dias<br>
+                    <strong>História da Doença Atual (HDA):</strong> Início súbito, associado a náuseas e febre (38ºC). Dor localizada em quadrante inferior direito, intensidade progressiva.<br>
+                    <strong>História Patológica Pregressa (HPP):</strong> [campo vazio – o usuário pode digitar e será incorporado]<br>
+                    <strong>História Familiar (HF):</strong> [campo vazio]<br>
+                    <strong>Hábitos e Estilo de Vida (HE):</strong> [campo vazio]<br>
+                    <strong>Exame Físico (EF):</strong> [campo vazio]<br>
+                    <strong>Hipóteses Diagnósticas:</strong> [preenchido quando solicitado]<br>
+                    <strong>Conduta / Plano:</strong> [preenchido quando solicitado]
+                </div>
+            </div>
+
+            <div class="sub-section">
+                <h4>8.1. Montagem Progressiva</h4>
+                <p>Você pode ir digitando parte por parte (ex.: hoje só QP + HDA, amanhã acrescenta EF). O sistema vai juntando tudo automaticamente.</p>
+            </div>
+
+            <div class="sub-section">
+                <h4>8.2. Organização Automática</h4>
+                <p>Mesmo que o usuário digite informações "soltas" ou desordenadas, o sistema coloca cada detalhe no campo correto.</p>
+            </div>
+
+            <div class="sub-section">
+                <h4>8.3. Exportação em Bloco Único</h4>
+                <p>No final, o sistema pergunta: <em>"Deseja exportar o prontuário completo em um bloco único para copiar e colar no seu sistema eletrônico?"</em></p>
+                <p>Isso gera um texto limpo, padronizado e pronto para colar no prontuário digital ou relatório médico.</p>
+            </div>
+
+            <div class="sub-section">
+                <h4>8.4. Flexibilidade de Detalhamento</h4>
+                <p>O usuário pode pedir: "Me dê a versão resumida do prontuário." ou "Expanda todos os detalhes em texto corrido para laudo."</p>
+            </div>
+
+            <div class="sub-section">
+                <h4>8.5. Integração com Fluxogramas e Condutas</h4>
+                <p>Após organizar o prontuário, o sistema pode complementar:</p>
+                <ul>
+                    <li>Sugestão de hipóteses diagnósticas</li>
+                    <li>Exames a considerar</li>
+                    <li>Conduta inicial baseada em diretrizes</li>
+                </ul>
+            </div>
+
+            <div class="sub-section">
+                <h4>8.6. Aplicação Multiperfil</h4>
+                <ul>
+                    <li>Para estudante → serve como modelo de treinamento de anamnese</li>
+                    <li>Para residente → organiza casos de enfermaria/ambulatório</li>
+                    <li>Para médico atuante → economiza tempo em consultório, já entregando formato exportável</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-number">9</div>
+            <h2>Respostas Curtas ou Completas</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: escolha o formato ao perguntar.</h4>
+                <div class="example-box">
+                    Exemplos:<br>
+                    • "Responda de forma objetiva."<br>
+                    • "Quero o raciocínio clínico completo."
+                </div>
+            </div>
+            
+            <div class="delivers-box">
+                <h4>O sistema adapta a resposta:</h4>
+                <ul>
+                    <li>Versão curta → tópicos essenciais, doses principais, resumo executivo</li>
+                    <li>Versão completa → todo o raciocínio clínico, fluxograma, checklist, conduta passo a passo e referências</li>
+                </ul>
+            </div>
+            
+            <div class="extras-box">
+                <h4>Funcionalidades extras:</h4>
+                <ul>
+                    <li>Permite alternar durante a mesma consulta ("me dê agora só o resumo")</li>
+                    <li>Dá flexibilidade: ideal para quem tem pressa (plantão) ou quem quer estudar</li>
+                    <li>Ajuda a treinar tanto tomada de decisão rápida quanto aprofundamento acadêmico</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-number">10</div>
+            <h2>Opções Extras</h2>
+            
+            <div class="usage-box">
+                <h4>Como usar: peça versões diferentes da mesma resposta.</h4>
+                <div class="example-box">
+                    Exemplos:<br>
+                    • "Faça resumo em bullet points."<br>
+                    • "Explique em linguagem para paciente."<br>
+                    • "Transforme em um slide de aula."
+                </div>
+            </div>
+            
+            <div class="delivers-box">
+                <h4>O sistema pode converter a mesma resposta em:</h4>
+                <ul>
+                    <li>Bullet points (resumo rápido)</li>
+                    <li>Texto corrido expandido (ex.: laudo ou relatório)</li>
+                    <li>Explicação para pacientes em linguagem acessível</li>
+                    <li>Material de ensino (slide, resumo de guideline, esquema comparativo)</li>
+                </ul>
+            </div>
+            
+            <div class="extras-box">
+                <h4>Funcionalidades extras:</h4>
+                <ul>
+                    <li>Facilita transformar uma mesma resposta em diferentes formatos (consultório, ensino, orientação ao paciente)</li>
+                    <li>Gera material pronto para consulta rápida, aula ou entrega ao paciente</li>
+                    <li>Economiza tempo de adaptação manual</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>🧠 STEMMIA - Revolucionando a prática médica com inteligência artificial</p>
+        </footer>
+    </div>
+</body>
+</html>
